@@ -1,5 +1,6 @@
 // ==============================================================================
 // Smart Escape Main Application Component
+// High-Precision Architectural Evacuation Studio Dashboard
 // ==============================================================================
 
 import React, { useState } from 'react';
@@ -7,8 +8,7 @@ import { SimulationProvider, useSimulation } from './context/SimulationContext';
 import { Header } from './components/Header';
 import { RouteHUD } from './components/HUD/RouteHUD';
 import { MapCanvas } from './components/Map/MapCanvas';
-import { TacticalControls } from './components/Controls/TacticalControls';
-import { JudgeTestRunner } from './components/Judge/JudgeTestRunner';
+import { OperationsConsole } from './components/Console/OperationsConsole';
 import { RouteWalkthrough } from './components/Walkthrough/RouteWalkthrough';
 import { AlternativeRoutes } from './components/AlternativeRoutes/AlternativeRoutes';
 
@@ -19,51 +19,49 @@ const DashboardContent: React.FC = () => {
 
   return (
     <div className="app-shell">
-      {/* 1. Master Header with Localization & Actions */}
+      {/* 1. Master Header with Localization & Top-Level Tactical Actions */}
       <Header />
 
-      {/* 2. Main Center Container */}
+      {/* 2. Main Center Workstation Container */}
       <main className="app-container">
-        {/* Top Emergency Status Banner & Breadcrumbs */}
+        {/* Real-Time Egress Status Telemetry Ribbon */}
         <RouteHUD />
 
         {/* 2-Column Responsive Dashboard Layout */}
         <div className="dashboard-layout">
-          {/* Left Column: Interactive Vector SVG Map & Walkthrough Player */}
-          <div className="column-stack">
+          {/* Left Column: Interactive Vector SVG Floorplan Stage & Telemetry Dock */}
+          <div className="canvas-column-stage">
             <MapCanvas
               interactionMode={interactionMode}
               setInteractionMode={setInteractionMode}
               walkthroughNodeId={walkthroughNodeId}
             />
-            {/* Walkthrough Player */}
-            <RouteWalkthrough onStepChange={setWalkthroughNodeId} />
-            {/* Alternative Routes Detour Analysis */}
-            <AlternativeRoutes />
+
+            {/* Bottom Telemetry Dock: Walkthrough Simulation Player & Detour Routes */}
+            <div className="telemetry-dock-row">
+              <RouteWalkthrough onStepChange={setWalkthroughNodeId} />
+              <AlternativeRoutes />
+            </div>
           </div>
 
-          {/* Right Column: Tactical Controls, Presets & Judge Verification Runner */}
-          <div className="column-stack">
-            {/* Start Node Selector, Hazard Checklists & Quick Presets */}
-            <TacticalControls />
-
-            {/* Official Judge Automated Verification Runner */}
-            <JudgeTestRunner />
+          {/* Right Column: Unified Tactical Operations Console (Judge Suite, Hazards, Presets) */}
+          <div className="console-column-panel">
+            <OperationsConsole />
           </div>
         </div>
       </main>
 
-      {/* 3. Footer */}
+      {/* 3. Streamlined Footer */}
       <footer className="app-footer">
         <div className="footer-inner">
           <div>
             <strong>Smart Escape</strong> • AI DevFest 2026 AI Vibe-Coding Contest (Solo)
           </div>
           <div style={{ fontFamily: 'var(--font-mono)' }}>
-            Active Dataset: <strong style={{ color: 'var(--text-white)' }}>{buildingData.building}</strong>
+            Dataset: <strong style={{ color: 'var(--text-white)' }}>{buildingData.building}</strong>
           </div>
           <div>
-            Released under <a href="./LICENSE" style={{ color: 'var(--text-primary)', textDecoration: 'underline' }}>MIT License</a>
+            Released under <a href="./LICENSE" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>MIT License</a>
           </div>
         </div>
       </footer>

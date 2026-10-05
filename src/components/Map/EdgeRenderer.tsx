@@ -1,6 +1,6 @@
 // ==============================================================================
-// EdgeRenderer: Renders Undirected Corridors, Centered Cost Badges & Hazards
-// Exact styling matching Smart Escape Problem Statement Section 1 & Section 3.2
+// EdgeRenderer: Renders Undirected Corridors, Centered Cost Badges & Egress Chevrons
+// High-Precision Architectural Blueprint & Directional Flow Visualization
 // ==============================================================================
 
 import React from 'react';
@@ -12,6 +12,7 @@ interface EdgeRendererProps {
   toNode: GraphNode;
   isBlocked: boolean;
   isOnRoute: boolean;
+  flowDirection?: 'forward' | 'reverse';
   onToggleBlocked: (edgeId: string) => void;
 }
 
@@ -21,6 +22,7 @@ export const EdgeRenderer: React.FC<EdgeRendererProps> = ({
   toNode,
   isBlocked,
   isOnRoute,
+  flowDirection = 'forward',
   onToggleBlocked,
 }) => {
   const x1 = fromNode.x;
@@ -32,16 +34,28 @@ export const EdgeRenderer: React.FC<EdgeRendererProps> = ({
   const midX = (x1 + x2) / 2;
   const midY = (y1 + y2) / 2;
 
+  // Directional Angle for Egress Flow Chevrons
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const baseAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
+  const chevronAngle = flowDirection === 'forward' ? baseAngle : baseAngle + 180;
+
+  // Chevron positions at 28% and 72% along corridor length
+  const p1X = x1 + dx * 0.28;
+  const p1Y = y1 + dy * 0.28;
+  const p2X = x1 + dx * 0.72;
+  const p2Y = y1 + dy * 0.72;
+
   // Visual Properties
   let strokeColor = '#334155'; // Architectural slate
-  let strokeWidth = 3.5;
+  let strokeWidth = 3;
 
   if (isBlocked) {
     strokeColor = '#ef4444';
     strokeWidth = 3.5;
   } else if (isOnRoute) {
-    strokeColor = '#2563eb'; // Route royal blue (matching Problem Statement PDF diagram)
-    strokeWidth = 5.5;
+    strokeColor = '#2563eb'; // Route royal blue
+    strokeWidth = 5;
   }
 
   return (
@@ -90,33 +104,59 @@ export const EdgeRenderer: React.FC<EdgeRendererProps> = ({
         style={{ cursor: 'pointer', transition: 'stroke 0.2s, stroke-width 0.2s' }}
       />
 
-      {/* 4. Centered Corridor Cost Pill Badge */}
+      {/* 4. Directional Egress Chevrons pointing toward Exit */}
+      {isOnRoute && !isBlocked && (
+        <g pointerEvents="none">
+          <g transform={`translate(${p1X}, ${p1Y}) rotate(${chevronAngle})`}>
+            <path
+              d="M -3 -4 L 3 0 L -3 4"
+              fill="none"
+              stroke="#93c5fd"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </g>
+          <g transform={`translate(${p2X}, ${p2Y}) rotate(${chevronAngle})`}>
+            <path
+              d="M -3 -4 L 3 0 L -3 4"
+              fill="none"
+              stroke="#93c5fd"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </g>
+        </g>
+      )}
+
+      {/* 5. Centered Corridor Cost Pill Badge */}
       <g transform={`translate(${midX}, ${midY})`} style={{ cursor: 'pointer' }}>
         <rect
-          x="-15"
+          x="-16"
           y="-11"
-          width="30"
+          width="32"
           height="22"
           rx="6"
           ry="6"
-          fill={isBlocked ? '#7f1d1d' : isOnRoute ? '#1e3a8a' : '#0f172a'}
-          stroke={isBlocked ? '#ef4444' : isOnRoute ? '#60a5fa' : '#475569'}
+          fill={isBlocked ? '#7f1d1d' : isOnRoute ? '#172554' : '#0f172a'}
+          stroke={isBlocked ? '#ef4444' : isOnRoute ? '#60a5fa' : '#334155'}
           strokeWidth={isOnRoute || isBlocked ? 1.8 : 1.2}
-          filter="drop-shadow(0 2px 5px rgba(0,0,0,0.6))"
+          filter="drop-shadow(0 2px 6px rgba(0,0,0,0.6))"
         />
         <text
           x="0"
           y="1"
           textAnchor="middle"
           dominantBaseline="central"
-          fill={isBlocked ? '#fca5a5' : isOnRoute ? '#bfdbfe' : '#e2e8f0'}
+          fill={isBlocked ? '#fca5a5' : isOnRoute ? '#bfdbfe' : '#94a3b8'}
           fontSize="11px"
           fontWeight="800"
           fontFamily="var(--font-mono)"
           pointerEvents="none"
           style={{ userSelect: 'none' }}
         >
-          {isBlocked ? '✕' : edge.cost}
+          {isBlocked ? `✕${edge.cost}` : edge.cost}
         </text>
       </g>
 

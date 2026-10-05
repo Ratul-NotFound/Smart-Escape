@@ -220,6 +220,9 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
                   closedExits.has(edge.to);
 
                 const isOnRoute = routeEdgeSet.has(edge.id);
+                const fromIdx = routeResult.path.indexOf(edge.from);
+                const toIdx = routeResult.path.indexOf(edge.to);
+                const flowDirection = fromIdx !== -1 && toIdx !== -1 && fromIdx > toIdx ? 'reverse' : 'forward';
 
                 return (
                   <EdgeRenderer
@@ -229,6 +232,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
                     toNode={toNode}
                     isBlocked={isEdgeBlocked}
                     isOnRoute={isOnRoute}
+                    flowDirection={flowDirection}
                     onToggleBlocked={toggleEdgeHazard}
                   />
                 );
@@ -258,24 +262,43 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
               })}
             </g>
 
-            {/* Walkthrough Avatar Marker */}
+            {/* Walkthrough Evacuee Simulation Avatar */}
             {walkthroughNode && (
               <g
                 className="walkthrough-avatar"
                 transform={`translate(${walkthroughNode.x}, ${walkthroughNode.y})`}
                 pointerEvents="none"
               >
-                <circle r="16" fill="#00ffcc" opacity="0.4" className="radar-pulse-ring" />
-                <circle r="9" fill="#00ffcc" stroke="#ffffff" strokeWidth="2" />
+                <circle r="20" fill="#10b981" opacity="0.35" className="radar-pulse-ring" />
+                <circle r="11" fill="#10b981" stroke="#ffffff" strokeWidth="2.5" />
+                {/* Evacuee Silhouette */}
+                <circle cx="0" cy="-3.5" r="2.2" fill="#ffffff" />
+                <path
+                  d="M 0 -1 L 0 4.5 M -3 1.5 L 3 1.5 M 0 4.5 L -2.5 8 M 0 4.5 L 2.5 8"
+                  stroke="#ffffff"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+                <rect
+                  x="-32"
+                  y="-27"
+                  width="64"
+                  height="16"
+                  rx="4"
+                  fill="#064e3b"
+                  stroke="#10b981"
+                  strokeWidth="1"
+                  filter="drop-shadow(0 2px 4px rgba(0,0,0,0.5))"
+                />
                 <text
                   y="-16"
                   textAnchor="middle"
-                  fill="#00ffcc"
-                  fontSize="11px"
+                  fill="#6ee7b7"
+                  fontSize="9.5px"
                   fontWeight="800"
                   fontFamily="var(--font-mono)"
                 >
-                  🚶 ESCAPE
+                  EVACUEE
                 </text>
               </g>
             )}
