@@ -31,7 +31,7 @@ export const TacticalControls: React.FC = () => {
   } = useSimulation();
 
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'presets' | 'hazards' | 'import'>('presets');
+  const [activeTab, setActiveTab] = useState<'presets' | 'hazards' | 'import'>('hazards');
 
   // Candidate start locations (rooms and junctions)
   const candidateStarts = buildingData.nodes.filter(

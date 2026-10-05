@@ -11,6 +11,7 @@ export const JudgeTestRunner: React.FC = () => {
   const { applyPresetScenario, t } = useSimulation();
   const [testResults, setTestResults] = useState<TestCaseResult[]>(() => runOfficialSection4Tests());
   const [hasRun, setHasRun] = useState<boolean>(true);
+  const [activeTestId, setActiveTestId] = useState<string | null>('TC-1');
 
   const handleRunChecks = () => {
     const results = runOfficialSection4Tests();
@@ -21,6 +22,7 @@ export const JudgeTestRunner: React.FC = () => {
   const allPassed = testResults.length > 0 && testResults.every((t) => t.passed);
 
   const handleInspectTest = (testId: string) => {
+    setActiveTestId(testId);
     switch (testId) {
       case 'TC-1':
         applyPresetScenario('baseline');
@@ -92,7 +94,7 @@ export const JudgeTestRunner: React.FC = () => {
           <div
             key={tc.id}
             onClick={() => handleInspectTest(tc.id)}
-            className="test-case-card"
+            className={`test-case-card ${activeTestId === tc.id ? 'active-test' : ''}`}
             title="Click to apply and inspect on interactive map"
           >
             <div className="test-info-left">

@@ -2,7 +2,7 @@
 // Simulation Context: Centralized Reactive State Store
 // ==============================================================================
 
-import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useState, useMemo, useCallback, useEffect } from 'react';
 import { BuildingData, RouteResult } from '../domain/types';
 import { defaultBuildingData } from '../data/defaultBuilding';
 import { solveEvacuationRoute } from '../domain/dijkstra';
@@ -55,6 +55,10 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [isHighContrast, setIsHighContrast] = useState<boolean>(() => {
     return localStorage.getItem('smart_escape_contrast') === 'high';
   });
+
+  useEffect(() => {
+    document.body.classList.toggle('high-contrast', isHighContrast);
+  }, [isHighContrast]);
 
   const [activeTestRunning] = useState<boolean>(false);
 

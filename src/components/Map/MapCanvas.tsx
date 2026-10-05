@@ -93,9 +93,16 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
   const handleMouseUp = () => setIsDragging(false);
 
+  // Smooth Wheel Zoom Handler
+  const handleWheel = (e: React.WheelEvent<SVGSVGElement>) => {
+    e.preventDefault();
+    const zoomDelta = e.deltaY > 0 ? -0.15 : 0.15;
+    setZoom((z) => Math.min(Math.max(Number((z + zoomDelta).toFixed(2)), 0.5), 3));
+  };
+
   // Zoom Controls
-  const handleZoomIn = () => setZoom((z) => Math.min(z + 0.2, 2.5));
-  const handleZoomOut = () => setZoom((z) => Math.max(z - 0.2, 0.5));
+  const handleZoomIn = () => setZoom((z) => Math.min(Number((z + 0.2).toFixed(2)), 3));
+  const handleZoomOut = () => setZoom((z) => Math.max(Number((z - 0.2).toFixed(2)), 0.5));
   const handleResetZoom = () => {
     setZoom(1);
     setPan({ x: 0, y: 0 });
@@ -173,6 +180,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          onWheel={handleWheel}
         >
           {/* SVG Definitions */}
           <defs>

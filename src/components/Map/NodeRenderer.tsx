@@ -191,13 +191,16 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
         </g>
       )}
 
-      {/* 5. Center Node ID Text */}
+      {/* 5. Center Node ID Text with Cartography Halo for Maximum Legibility */}
       <text
         x={x}
         y={y + 1}
         textAnchor="middle"
         dominantBaseline="central"
         fill="#ffffff"
+        stroke="rgba(10, 14, 23, 0.9)"
+        strokeWidth="3"
+        paintOrder="stroke fill"
         fontSize={isExit ? '13px' : '12px'}
         fontWeight="800"
         fontFamily="var(--font-mono)"
