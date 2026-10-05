@@ -1,0 +1,243 @@
+/* ==============================================================================
+   Smart Escape: Tactical Emergency Operations Center (EOC) Styling & Tokens
+   ============================================================================== */
+
+:root {
+  /* Dark Tactical EOC Palette */
+  --bg-app: #080c14;
+  --bg-surface: #0f172a;
+  --bg-card: rgba(15, 23, 42, 0.75);
+  --bg-card-hover: rgba(30, 41, 59, 0.85);
+  --border-subtle: rgba(56, 189, 248, 0.15);
+  --border-active: rgba(56, 189, 248, 0.4);
+  
+  /* Text & Labels */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  /* Node & Graph Colors */
+  --color-room: #3b82f6;        /* Blue */
+  --color-junction: #8b5cf6;    /* Purple */
+  --color-exit-open: #10b981;   /* Emerald */
+  --color-exit-closed: #ef4444; /* Crimson */
+  --color-start: #f59e0b;       /* Amber */
+  --color-corridor: #475569;    /* Muted Slate */
+  --color-hazard: #ef4444;      /* Warning Red */
+  --color-route: #10b981;       /* Safe Evacuation Green */
+  
+  /* Glows & Shadows */
+  --glow-route: 0 0 16px rgba(16, 185, 129, 0.65);
+  --glow-start: 0 0 20px rgba(245, 158, 11, 0.7);
+  --glow-hazard: 0 0 16px rgba(239, 68, 68, 0.6);
+
+  /* Font Families */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* High Contrast Accessibility Mode */
+body.high-contrast {
+  --bg-app: #000000;
+  --bg-surface: #0a0a0a;
+  --bg-card: #121212;
+  --bg-card-hover: #1e1e1e;
+  --border-subtle: #ffffff;
+  --border-active: #00ff66;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #e2e8f0;
+  --text-muted: #cbd5e1;
+  
+  --color-room: #0088ff;
+  --color-junction: #cc00ff;
+  --color-exit-open: #00ff66;
+  --color-exit-closed: #ff0033;
+  --color-start: #ffff00;
+  --color-corridor: #94a3b8;
+  --color-hazard: #ff0033;
+  --color-route: #00ff66;
+  
+  --glow-route: 0 0 24px rgba(0, 255, 102, 0.9);
+  --glow-start: 0 0 24px rgba(255, 255, 0, 0.9);
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-app);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+}
+
+.glass-panel-hover {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel-hover:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-active);
+  transform: translateY(-1px);
+}
+
+/* SVG Flow & Pulse Animations */
+@keyframes routeFlow {
+  from {
+    stroke-dashoffset: 32;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.route-flow-animation {
+  stroke-dasharray: 8 8;
+  animation: routeFlow 1s linear infinite;
+}
+
+@keyframes pulseRadar {
+  0% {
+    r: 18;
+    opacity: 0.9;
+  }
+  100% {
+    r: 38;
+    opacity: 0;
+  }
+}
+
+.radar-pulse-ring {
+  animation: pulseRadar 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+}
+
+@keyframes badgeGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px var(--color-route));
+  }
+  50% {
+    filter: drop-shadow(0 0 14px var(--color-route));
+  }
+}
+
+.active-exit-beacon {
+  animation: badgeGlow 2s ease-in-out infinite;
+}
+
+/* Button & Interactive Utility Styles */
+.btn-tactical {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid var(--border-subtle);
+  background: rgba(30, 41, 59, 0.6);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.btn-tactical:hover {
+  background: rgba(51, 65, 85, 0.8);
+  border-color: var(--border-active);
+  color: #fff;
+}
+
+.btn-tactical:active {
+  transform: scale(0.98);
+}
+
+.btn-tactical-primary {
+  background: #059669;
+  border-color: #10b981;
+  color: #ffffff;
+}
+
+.btn-tactical-primary:hover {
+  background: #10b981;
+  border-color: #34d399;
+}
+
+.btn-tactical-danger {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+}
+
+.btn-tactical-danger:hover {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: #ef4444;
+  color: #ffffff;
+}
+
+/* Status Banner Styles */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  font-family: var(--font-mono);
+}
+
+.status-pill-success {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.status-pill-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.status-pill-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
