@@ -1,5 +1,6 @@
 // ==============================================================================
 // NodeRenderer: Renders Rooms, Junctions, Exits, Start Beacons & Hazards
+// Exact styling matching Smart Escape Problem Statement Section 1 & Section 3.2
 // ==============================================================================
 
 import React from 'react';
@@ -26,39 +27,50 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
 }) => {
   const { id, label, type, x, y } = node;
 
-  // Visual Styling Definitions
-  const size = type === 'room' ? 36 : type === 'exit' ? 38 : 30;
-  const halfSize = size / 2;
+  // Geometry Dimensions
+  const isExit = type === 'exit';
+  const isRoom = type === 'room';
+  const size = isExit ? 40 : isRoom ? 38 : 34;
+  const radius = size / 2;
 
-  // Node Color Scheme
-  let fillColor = '#3b82f6'; // default room blue
-  let strokeColor = '#60a5fa';
-  let badgeText = id;
+  // Exact Color Logic from Problem Statement PDF
+  let fillColor = '#1e293b';       // Inactive slate-blue
+  let strokeColor = '#475569';
+  let strokeWidth = 2;
 
-  if (type === 'junction') {
-    fillColor = '#8b5cf6';
-    strokeColor = '#a78bfa';
-  } else if (type === 'exit') {
-    if (isClosedExit) {
-      fillColor = '#ef4444';
-      strokeColor = '#f87171';
+  if (isBlocked || isClosedExit) {
+    fillColor = '#dc2626';        // Hazard crimson
+    strokeColor = '#f87171';
+    strokeWidth = 2.5;
+  } else if (isStart) {
+    fillColor = '#f59e0b';        // Amber starting beacon
+    strokeColor = '#fde68a';
+    strokeWidth = 3;
+  } else if (isOnRoute) {
+    if (isExit) {
+      fillColor = '#10b981';      // Exit emerald
+      strokeColor = '#6ee7b7';
+      strokeWidth = 3;
     } else {
-      fillColor = '#10b981';
-      strokeColor = '#34d399';
+      fillColor = '#2563eb';      // Route blue (as in Problem Statement PDF)
+      strokeColor = '#93c5fd';
+      strokeWidth = 2.5;
+    }
+  } else {
+    // Normal open unselected state
+    if (isExit) {
+      fillColor = '#065f46';
+      strokeColor = '#10b981';
+    } else if (isRoom) {
+      fillColor = '#1e3a8a';
+      strokeColor = '#3b82f6';
+    } else {
+      fillColor = '#312e81';
+      strokeColor = '#8b5cf6';
     }
   }
 
-  if (isBlocked) {
-    fillColor = '#b91c1c';
-    strokeColor = '#ef4444';
-  }
-
-  if (isStart) {
-    fillColor = '#f59e0b';
-    strokeColor = '#fbbf24';
-  }
-
-  // Generate SVG Hexagon points for exits
+  // Hexagon Generator for Exits
   const hexPoints = (cx: number, cy: number, r: number) => {
     const points: string[] = [];
     for (let i = 0; i < 6; i++) {
@@ -70,27 +82,27 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
 
   return (
     <g
-      className={`graph-node cursor-pointer transition-transform duration-150 hover:scale-110`}
+      className="graph-node-group cursor-pointer"
       onClick={() => onClick(node)}
       style={{ cursor: 'pointer' }}
     >
-      {/* 1. Pulsing radar rings for Start Node */}
+      {/* 1. Concentric Pulsing Radar Rings for Start Node */}
       {isStart && (
-        <g>
+        <g pointerEvents="none">
           <circle
             cx={x}
             cy={y}
-            r={24}
+            r={radius + 10}
             fill="none"
             stroke="#f59e0b"
-            strokeWidth="2"
-            opacity="0.75"
+            strokeWidth="2.5"
+            opacity="0.8"
             className="radar-pulse-ring"
           />
           <circle
             cx={x}
             cy={y}
-            r={32}
+            r={radius + 20}
             fill="none"
             stroke="#f59e0b"
             strokeWidth="1.5"
@@ -101,107 +113,116 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
         </g>
       )}
 
-      {/* 2. Route glow aura for nodes on optimal evacuation path */}
+      {/* 2. Route Glow Aura */}
       {isOnRoute && !isStart && !isBlocked && (
         <circle
           cx={x}
           cy={y}
-          r={halfSize + 6}
+          r={radius + 8}
           fill="none"
-          stroke="#10b981"
-          strokeWidth="3"
-          opacity="0.8"
+          stroke={isExit ? '#10b981' : '#3b82f6'}
+          strokeWidth="3.5"
+          opacity="0.75"
           filter="url(#glow-filter)"
+          pointerEvents="none"
         />
       )}
 
-      {/* 3. Base Node Geometry */}
-      {type === 'room' && (
+      {/* 3. Base Node Shape */}
+      {isRoom && (
         <rect
-          x={x - halfSize}
-          y={y - halfSize}
+          x={x - radius}
+          y={y - radius}
           width={size}
           height={size}
-          rx={8}
-          ry={8}
+          rx={9}
+          ry={9}
           fill={fillColor}
           stroke={strokeColor}
-          strokeWidth={isOnRoute ? 3 : 2}
-          filter="drop-shadow(0 2px 5px rgba(0,0,0,0.5))"
+          strokeWidth={strokeWidth}
+          filter="drop-shadow(0 3px 6px rgba(0,0,0,0.6))"
         />
       )}
 
-      {type === 'junction' && (
+      {!isRoom && !isExit && (
         <circle
           cx={x}
           cy={y}
-          r={halfSize}
+          r={radius}
           fill={fillColor}
           stroke={strokeColor}
-          strokeWidth={isOnRoute ? 3 : 2}
-          filter="drop-shadow(0 2px 5px rgba(0,0,0,0.5))"
+          strokeWidth={strokeWidth}
+          filter="drop-shadow(0 3px 6px rgba(0,0,0,0.6))"
         />
       )}
 
-      {type === 'exit' && (
+      {isExit && (
         <polygon
-          points={hexPoints(x, y, halfSize + 2)}
+          points={hexPoints(x, y, radius + 2)}
           fill={fillColor}
           stroke={strokeColor}
-          strokeWidth={isOnRoute || !isClosedExit ? 3 : 2}
+          strokeWidth={strokeWidth}
           className={!isClosedExit && isOnRoute ? 'active-exit-beacon' : ''}
-          filter="drop-shadow(0 2px 6px rgba(0,0,0,0.6))"
+          filter="drop-shadow(0 3px 8px rgba(0,0,0,0.7))"
         />
       )}
 
-      {/* 4. Hazard Strikethrough diagonal hatch if Blocked */}
+      {/* 4. Diagonal Strikethrough Hazard Cross if Blocked */}
       {(isBlocked || isClosedExit) && (
         <g pointerEvents="none">
           <line
-            x1={x - halfSize + 4}
-            y1={y - halfSize + 4}
-            x2={x + halfSize - 4}
-            y2={y + halfSize - 4}
+            x1={x - radius + 5}
+            y1={y - radius + 5}
+            x2={x + radius - 5}
+            y2={y + radius - 5}
             stroke="#ffffff"
-            strokeWidth="3"
+            strokeWidth="3.5"
             strokeLinecap="round"
           />
           <line
-            x1={x + halfSize - 4}
-            y1={y - halfSize + 4}
-            x2={x - halfSize + 4}
-            y2={y + halfSize - 4}
+            x1={x + radius - 5}
+            y1={y - radius + 5}
+            x2={x - radius + 5}
+            y2={y + radius - 5}
             stroke="#ffffff"
-            strokeWidth="3"
+            strokeWidth="3.5"
             strokeLinecap="round"
           />
         </g>
       )}
 
-      {/* 5. Center ID text */}
+      {/* 5. Center Node ID Text */}
       <text
         x={x}
         y={y + 1}
         textAnchor="middle"
         dominantBaseline="central"
         fill="#ffffff"
-        fontSize={type === 'exit' ? '12px' : '11px'}
-        fontWeight="700"
+        fontSize={isExit ? '13px' : '12px'}
+        fontWeight="800"
         fontFamily="var(--font-mono)"
         pointerEvents="none"
         style={{ userSelect: 'none' }}
       >
-        {badgeText}
+        {id}
       </text>
 
-      {/* 6. External Node Label Below Geometry */}
+      {/* 6. External Node Label Below Node (Positioned with safe offset) */}
       <text
         x={x}
-        y={y + halfSize + 14}
+        y={y + radius + 16}
         textAnchor="middle"
-        fill={isBlocked || isClosedExit ? '#f87171' : isStart ? '#fbbf24' : '#cbd5e1'}
-        fontSize="11px"
-        fontWeight="600"
+        fill={
+          isBlocked || isClosedExit
+            ? '#f87171'
+            : isStart
+            ? '#fbbf24'
+            : isOnRoute
+            ? '#e2e8f0'
+            : '#94a3b8'
+        }
+        fontSize="11.5px"
+        fontWeight="700"
         fontFamily="var(--font-sans)"
         pointerEvents="none"
         style={{ userSelect: 'none' }}
@@ -209,14 +230,14 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
         {label}
       </text>
 
-      {/* 7. Mode Hint Indicator Badge on Hover */}
+      {/* Tooltip */}
       <title>
         {`${label} (${id}) [${type.toUpperCase()}]\n`}
         {isBlocked ? '⚠️ Hazard: Blocked\n' : ''}
         {isClosedExit ? '🚫 Status: Closed Exit\n' : ''}
-        {isStart ? '📍 Current Starting Location\n' : ''}
+        {isStart ? '📍 Starting Location\n' : ''}
         {interactionMode === 'select_start'
-          ? 'Click to set as Start Location'
+          ? 'Click to select as Start Location'
           : 'Click to toggle Hazard status'}
       </title>
     </g>
