@@ -76,6 +76,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     };
   }, [buildingData.nodes]);
 
+  // Compute safe exit boundary on right side of exits
+  const maxExitX = useMemo(() => {
+    const exitNodes = buildingData.nodes.filter((n) => n.type === 'exit');
+    if (exitNodes.length === 0) return 0;
+    return Math.max(...exitNodes.map((n) => n.x));
+  }, [buildingData.nodes]);
+
   // Handle Pan Dragging
   const handleMouseDown = (e: React.MouseEvent<SVGSVGElement>) => {
     if (e.button !== 0) return;
@@ -190,7 +197,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
             </filter>
 
             <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(56, 189, 248, 0.08)" strokeWidth="1" />
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="var(--map-grid-stroke, rgba(56, 189, 248, 0.08))" strokeWidth="1" />
             </pattern>
           </defs>
 
@@ -205,6 +212,74 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
           {/* Transform Layer for Pan & Zoom */}
           <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
+            {/* 1. Exterior Safe Assembly Zone (Outside Building Beyond Exits) */}
+            {maxExitX > 0 && (
+              <g className="assembly-safe-zone" pointerEvents="none">
+                <line
+                  x1={maxExitX + 46}
+                  y1={minY - 200}
+                  x2={maxExitX + 46}
+                  y2={minY + height + 200}
+                  stroke="rgba(16, 185, 129, 0.45)"
+                  strokeWidth="2"
+                  strokeDasharray="6 4"
+                />
+                <rect
+                  x={maxExitX + 46}
+                  y={minY - 200}
+                  width="300"
+                  height={height + 400}
+                  fill="rgba(16, 185, 129, 0.04)"
+                />
+                <text
+                  x={maxExitX + 62}
+                  y={minY + 40}
+                  fill="#34d399"
+                  fontSize="9px"
+                  fontWeight="800"
+                  fontFamily="var(--font-mono)"
+                  letterSpacing="0.1em"
+                  transform={`rotate(90, ${maxExitX + 62}, ${minY + 40})`}
+                  opacity="0.85"
+                >
+                  EXTERIOR SAFE ASSEMBLY AREA
+                </text>
+              </g>
+            )}
+
+            {/* 2. Blueprint Architectural Title & Metadata */}
+            <g transform={`translate(${minX + 8}, ${minY + 16})`} pointerEvents="none">
+              <text
+                fill="rgba(255, 255, 255, 0.3)"
+                fontSize="8px"
+                fontWeight="700"
+                fontFamily="var(--font-mono)"
+                letterSpacing="0.08em"
+              >
+                LEVEL 01 • EVACUATION EGRESS BLUEPRINT
+              </text>
+            </g>
+
+            {/* 3. Architectural Compass Rose (North Arrow) */}
+            <g transform={`translate(${minX + width - 24}, ${minY + 24})`} pointerEvents="none">
+              <circle r="14" fill="rgba(15, 23, 42, 0.7)" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1" />
+              <path d="M 0 -10 L 3.5 3 L 0 0 L -3.5 3 Z" fill="#ef4444" />
+              <path d="M 0 10 L 3.5 -3 L 0 0 L -3.5 -3 Z" fill="#94a3b8" />
+              <text y="-11" textAnchor="middle" fill="#f87171" fontSize="8px" fontWeight="800" fontFamily="var(--font-mono)">N</text>
+            </g>
+
+            {/* 4. Metric Dimension Scale Bar */}
+            <g transform={`translate(${minX + 8}, ${minY + height - 10})`} pointerEvents="none">
+              <rect x="0" y="0" width="80" height="3" fill="#334155" />
+              <rect x="0" y="0" width="40" height="3" fill="#38bdf8" />
+              <line x1="0" y1="-2" x2="0" y2="5" stroke="#94a3b8" strokeWidth="1" />
+              <line x1="40" y1="-2" x2="40" y2="5" stroke="#94a3b8" strokeWidth="1" />
+              <line x1="80" y1="-2" x2="80" y2="5" stroke="#94a3b8" strokeWidth="1" />
+              <text x="0" y="-4" fill="#94a3b8" fontSize="7.5px" fontFamily="var(--font-mono)">0</text>
+              <text x="40" y="-4" fill="#94a3b8" fontSize="7.5px" fontFamily="var(--font-mono)">5m</text>
+              <text x="80" y="-4" fill="#94a3b8" fontSize="7.5px" fontFamily="var(--font-mono)">10m</text>
+            </g>
+
             {/* Corridors (Edges) */}
             <g className="edges-layer">
               {buildingData.edges.map((edge) => {

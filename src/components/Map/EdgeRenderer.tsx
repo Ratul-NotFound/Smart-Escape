@@ -1,6 +1,6 @@
 // ==============================================================================
-// EdgeRenderer: Renders Undirected Corridors, Centered Cost Badges & Egress Chevrons
-// High-Precision Architectural Blueprint & Directional Flow Visualization
+// EdgeRenderer: Architectural Corridor Hallways & Egress Directional Visualization
+// Authentic Building Blueprint Styling with Real Hallway Width & Dynamic Chevrons
 // ==============================================================================
 
 import React from 'react';
@@ -30,33 +30,21 @@ export const EdgeRenderer: React.FC<EdgeRendererProps> = ({
   const x2 = toNode.x;
   const y2 = toNode.y;
 
-  // Midpoint calculation for centered cost badge
+  // Midpoint calculation for centered dimension badge
   const midX = (x1 + x2) / 2;
   const midY = (y1 + y2) / 2;
 
-  // Directional Angle for Egress Flow Chevrons
+  // Directional Vector & Angle for Egress Flow Chevrons
   const dx = x2 - x1;
   const dy = y2 - y1;
   const baseAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
   const chevronAngle = flowDirection === 'forward' ? baseAngle : baseAngle + 180;
 
-  // Chevron positions at 28% and 72% along corridor length
-  const p1X = x1 + dx * 0.28;
-  const p1Y = y1 + dy * 0.28;
-  const p2X = x1 + dx * 0.72;
-  const p2Y = y1 + dy * 0.72;
-
-  // Visual Properties
-  let strokeColor = '#334155'; // Architectural slate
-  let strokeWidth = 3;
-
-  if (isBlocked) {
-    strokeColor = '#ef4444';
-    strokeWidth = 3.5;
-  } else if (isOnRoute) {
-    strokeColor = '#2563eb'; // Route royal blue
-    strokeWidth = 5;
-  }
+  // 3 Chevron positions along corridor length (22%, 50% offset slightly, 78%)
+  const p1X = x1 + dx * 0.22;
+  const p1Y = y1 + dy * 0.22;
+  const p2X = x1 + dx * 0.78;
+  const p2Y = y1 + dy * 0.78;
 
   return (
     <g
@@ -70,59 +58,84 @@ export const EdgeRenderer: React.FC<EdgeRendererProps> = ({
         x2={x2}
         y2={y2}
         stroke="transparent"
-        strokeWidth="24"
+        strokeWidth="28"
         style={{ cursor: 'pointer' }}
       />
 
-      {/* 2. Route Glow Backdrop when active */}
+      {/* 2. Architectural Hallway Slab (Real blueprint corridor width) */}
+      <line
+        x1={x1}
+        y1={y1}
+        x2={x2}
+        y2={y2}
+        stroke={isBlocked ? 'rgba(239, 68, 68, 0.15)' : isOnRoute ? 'rgba(16, 185, 129, 0.15)' : 'var(--corridor-slab, rgba(30, 41, 59, 0.45))'}
+        strokeWidth="16"
+        strokeLinecap="round"
+        pointerEvents="none"
+      />
+
+      {/* 3. Hallway Outer Wall Boundary Lines (Architectural Blueprint Casing) */}
+      <line
+        x1={x1}
+        y1={y1}
+        x2={x2}
+        y2={y2}
+        stroke={isBlocked ? 'rgba(239, 68, 68, 0.35)' : isOnRoute ? 'rgba(16, 185, 129, 0.4)' : 'var(--corridor-casing, rgba(71, 85, 105, 0.35))'}
+        strokeWidth="17"
+        strokeDasharray="1 16"
+        strokeLinecap="round"
+        pointerEvents="none"
+      />
+
+      {/* 4. Active Route Egress Glow Backdrop */}
       {isOnRoute && !isBlocked && (
         <line
           x1={x1}
           y1={y1}
           x2={x2}
           y2={y2}
-          stroke="#38bdf8"
-          strokeWidth="12"
-          opacity="0.35"
+          stroke="#10b981"
+          strokeWidth="10"
+          opacity="0.3"
           strokeLinecap="round"
           filter="url(#glow-filter)"
           pointerEvents="none"
         />
       )}
 
-      {/* 3. Base Corridor Line */}
+      {/* 5. Central Corridor Path Line */}
       <line
         x1={x1}
         y1={y1}
         x2={x2}
         y2={y2}
-        stroke={strokeColor}
-        strokeWidth={strokeWidth}
-        strokeDasharray={isBlocked ? '6 5' : undefined}
+        stroke={isBlocked ? '#ef4444' : isOnRoute ? '#10b981' : 'var(--corridor-stroke, #475569)'}
+        strokeWidth={isOnRoute ? 4 : isBlocked ? 3 : 2}
+        strokeDasharray={isBlocked ? '6 4' : undefined}
         strokeLinecap="round"
         className={isOnRoute && !isBlocked ? 'route-flow-animation' : ''}
         style={{ cursor: 'pointer', transition: 'stroke 0.2s, stroke-width 0.2s' }}
       />
 
-      {/* 4. Directional Egress Chevrons pointing toward Exit */}
+      {/* 6. Directional Egress Chevrons (Point toward exit along route) */}
       {isOnRoute && !isBlocked && (
         <g pointerEvents="none">
           <g transform={`translate(${p1X}, ${p1Y}) rotate(${chevronAngle})`}>
             <path
-              d="M -3 -4 L 3 0 L -3 4"
+              d="M -4 -5 L 3 0 L -4 5"
               fill="none"
-              stroke="#93c5fd"
-              strokeWidth="2"
+              stroke="#6ee7b7"
+              strokeWidth="2.2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </g>
           <g transform={`translate(${p2X}, ${p2Y}) rotate(${chevronAngle})`}>
             <path
-              d="M -3 -4 L 3 0 L -3 4"
+              d="M -4 -5 L 3 0 L -4 5"
               fill="none"
-              stroke="#93c5fd"
-              strokeWidth="2"
+              stroke="#6ee7b7"
+              strokeWidth="2.2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -130,38 +143,38 @@ export const EdgeRenderer: React.FC<EdgeRendererProps> = ({
         </g>
       )}
 
-      {/* 5. Centered Corridor Cost Pill Badge */}
+      {/* 7. Centered Corridor Cost Dimension Pill Badge */}
       <g transform={`translate(${midX}, ${midY})`} style={{ cursor: 'pointer' }}>
         <rect
-          x="-16"
+          x="-18"
           y="-11"
-          width="32"
+          width="36"
           height="22"
           rx="6"
           ry="6"
-          fill={isBlocked ? '#7f1d1d' : isOnRoute ? '#172554' : '#0f172a'}
-          stroke={isBlocked ? '#ef4444' : isOnRoute ? '#60a5fa' : '#334155'}
+          fill={isBlocked ? '#7f1d1d' : isOnRoute ? '#064e3b' : 'var(--corridor-badge-bg, #0b0f19)'}
+          stroke={isBlocked ? '#ef4444' : isOnRoute ? '#10b981' : 'var(--corridor-badge-border, #334155)'}
           strokeWidth={isOnRoute || isBlocked ? 1.8 : 1.2}
-          filter="drop-shadow(0 2px 6px rgba(0,0,0,0.6))"
+          filter="drop-shadow(0 2px 6px rgba(0,0,0,0.7))"
         />
         <text
           x="0"
           y="1"
           textAnchor="middle"
           dominantBaseline="central"
-          fill={isBlocked ? '#fca5a5' : isOnRoute ? '#bfdbfe' : '#94a3b8'}
+          fill={isBlocked ? '#fca5a5' : isOnRoute ? '#a7f3d0' : 'var(--corridor-badge-text, #cbd5e1)'}
           fontSize="11px"
           fontWeight="800"
           fontFamily="var(--font-mono)"
           pointerEvents="none"
           style={{ userSelect: 'none' }}
         >
-          {isBlocked ? `✕${edge.cost}` : edge.cost}
+          {isBlocked ? `✕${edge.cost}` : `${edge.cost}`}
         </text>
       </g>
 
-      <title>{`Corridor ${edge.id}: ${fromNode.label} ↔ ${toNode.label}\nCost: ${edge.cost}\nStatus: ${
-        isBlocked ? 'Blocked (Hazard)' : 'Open'
+      <title>{`Corridor ${edge.id}: ${fromNode.label} ↔ ${toNode.label}\nCost: ${edge.cost} units\nStatus: ${
+        isBlocked ? 'BLOCKED (HAZARD)' : 'OPEN EGRESS ROUTE'
       }\nClick to toggle hazard`}</title>
     </g>
   );

@@ -12,12 +12,16 @@ import {
   Download,
   FileJson,
   Flame,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const {
     lang,
     setLang,
+    theme,
+    setTheme,
     isHighContrast,
     toggleHighContrast,
     buildingData,
@@ -76,6 +80,30 @@ export const Header: React.FC = () => {
               className={`lang-btn ${lang === 'bn' ? 'active' : ''}`}
             >
               বাংলা
+            </button>
+          </div>
+
+          {/* Theme Switcher: Dark EOC vs White Theme */}
+          <div className="theme-switcher" id="theme-switcher" role="group" aria-label={t.themeToggle}>
+            <button
+              type="button"
+              onClick={() => setTheme('dark')}
+              className={`theme-btn ${theme === 'dark' ? 'active' : ''}`}
+              title={t.switchToDarkTheme}
+              id="theme-dark-btn"
+            >
+              <Moon size={13} />
+              <span>{t.themeDark}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setTheme('light')}
+              className={`theme-btn ${theme === 'light' ? 'active' : ''}`}
+              title={t.switchToWhiteTheme}
+              id="theme-light-btn"
+            >
+              <Sun size={13} />
+              <span>{t.themeWhite}</span>
             </button>
           </div>
 

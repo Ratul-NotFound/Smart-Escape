@@ -71,6 +71,7 @@ All 5 official test cases specified in Problem Statement Section 4.1 have been v
 - [x] **Alternative Routes Discovery ($K$-Shortest Paths):** Yen's-style edge-deviation search discovering secondary evacuation detours with comparative $+\Delta$ cost analysis.
 - [x] **Built-in Judge Automated Test Runner:** Embedded one-click test execution suite verifying Section 4.1 cases with interactive inspection on the map.
 - [x] **High-Contrast Theme (WCAG AAA):** Tactical ultra-high contrast dark mode for impaired visibility during emergencies.
+- [x] **White Theme & Dark Tactical EOC Mode:** Dedicated segmented toggle button (`☀️ White Theme` / `🌙 Dark Theme`) with smooth color-science transitions and cartographic halo typography.
 - [x] **Client-Side PNG Map Export:** One-click rasterizer saving high-resolution building maps directly to PNG.
 - [x] **Simulation State JSON Export:** Download current building state with modified hazards as standard JSON.
 

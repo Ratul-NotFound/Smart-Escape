@@ -64,6 +64,11 @@ export interface TranslationDictionary {
   nodeTypeRoom: string;
   nodeTypeJunction: string;
   nodeTypeExit: string;
+  themeWhite: string;
+  themeDark: string;
+  themeToggle: string;
+  switchToWhiteTheme: string;
+  switchToDarkTheme: string;
 }
 
 export const translations: Record<Language, TranslationDictionary> = {
@@ -127,6 +132,11 @@ export const translations: Record<Language, TranslationDictionary> = {
     nodeTypeRoom: 'Room',
     nodeTypeJunction: 'Junction',
     nodeTypeExit: 'Exit',
+    themeWhite: 'White Theme',
+    themeDark: 'Dark Theme',
+    themeToggle: 'Toggle White / Dark Theme',
+    switchToWhiteTheme: 'Switch to White Theme',
+    switchToDarkTheme: 'Switch to Dark EOC Theme',
   },
   bn: {
     appTitle: 'স্মার্ট এস্কেপ',
@@ -188,5 +198,10 @@ export const translations: Record<Language, TranslationDictionary> = {
     nodeTypeRoom: 'কক্ষ (Room)',
     nodeTypeJunction: 'সংযোগস্থল (Junction)',
     nodeTypeExit: 'বহির্গমন (Exit)',
+    themeWhite: 'হোয়াইট থিম',
+    themeDark: 'ডার্ক থিম',
+    themeToggle: 'হোয়াইট / ডার্ক থিম পরিবর্তন',
+    switchToWhiteTheme: 'হোয়াইট থিমে পরিবর্তন করুন',
+    switchToDarkTheme: 'ডার্ক থিমে পরিবর্তন করুন',
   },
 };

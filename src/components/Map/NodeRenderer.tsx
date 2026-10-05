@@ -29,12 +29,12 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
 
   const isExit = type === 'exit';
   const isRoom = type === 'room';
-  const size = isExit ? 44 : isRoom ? 40 : 36;
+  const size = isExit ? 46 : isRoom ? 42 : 36;
   const radius = size / 2;
 
   // Semantic color logic
-  let fillColor = '#111827';
-  let strokeColor = '#374151';
+  let fillColor = '#0f172a';
+  let strokeColor = '#334155';
   let strokeWidth = 2;
 
   if (isBlocked || isClosedExit) {
@@ -84,7 +84,7 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
       onClick={() => onClick(node)}
       style={{ cursor: 'pointer' }}
     >
-      {/* 1. Start Location Radar Wave Animation */}
+      {/* 1. Start Location Radar Wave Animation & Pinpoint Tag */}
       {isStart && (
         <g pointerEvents="none">
           <circle
@@ -108,6 +108,33 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
             className="radar-pulse-ring"
             style={{ animationDelay: '0.6s' }}
           />
+
+          {/* "YOU ARE HERE" Start Location Floating Badge */}
+          <g transform={`translate(${x}, ${y - radius - 16})`}>
+            <rect
+              x="-48"
+              y="-12"
+              width="96"
+              height="16"
+              rx="4"
+              fill="#b45309"
+              stroke="#fbbf24"
+              strokeWidth="1"
+              filter="drop-shadow(0 2px 4px rgba(0,0,0,0.6))"
+            />
+            <text
+              y="-1"
+              textAnchor="middle"
+              dominantBaseline="central"
+              fill="#ffffff"
+              fontSize="8.5px"
+              fontWeight="800"
+              fontFamily="var(--font-mono)"
+              letterSpacing="0.04em"
+            >
+              📍 YOU ARE HERE
+            </text>
+          </g>
         </g>
       )}
 
@@ -129,14 +156,27 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
       {/* 3. Base Node Geometry & Architectural Features */}
       {isRoom && (
         <g>
-          {/* Room Compartment */}
+          {/* Room Outer Wall Casing */}
+          <rect
+            x={x - radius - 2}
+            y={y - radius - 2}
+            width={size + 4}
+            height={size + 4}
+            rx={9}
+            ry={9}
+            fill="none"
+            stroke={isBlocked ? 'rgba(239, 68, 68, 0.4)' : 'rgba(59, 130, 246, 0.35)'}
+            strokeWidth="1"
+            pointerEvents="none"
+          />
+          {/* Room Compartment Interior */}
           <rect
             x={x - radius}
             y={y - radius}
             width={size}
             height={size}
-            rx={8}
-            ry={8}
+            rx={7}
+            ry={7}
             fill={fillColor}
             stroke={strokeColor}
             strokeWidth={strokeWidth}
@@ -210,18 +250,15 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
             strokeWidth={strokeWidth}
             filter="drop-shadow(0 4px 10px rgba(0,0,0,0.6))"
           />
-          {/* Small ISO Egress Icon (Doorway marker on top left) */}
+          {/* Outward Egress Light Indicator (Pointing to Safe Zone) */}
           {!isClosedExit && (
-            <rect
-              x={x - radius + 7}
-              y={y - radius + 6}
-              width="6"
-              height="10"
-              rx="1"
-              fill="#ffffff"
-              opacity="0.75"
-              pointerEvents="none"
-            />
+            <g transform={`translate(${x + radius + 4}, ${y})`} pointerEvents="none">
+              <path
+                d="M 0 -4 L 6 0 L 0 4 Z"
+                fill="#10b981"
+                opacity={isOnRoute ? 0.95 : 0.6}
+              />
+            </g>
           )}
         </g>
       )}
@@ -247,6 +284,30 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
             strokeWidth="3"
             strokeLinecap="round"
           />
+          {/* Fire / Hazard Pill Label */}
+          <g transform={`translate(${x}, ${y - radius - 12})`}>
+            <rect
+              x="-26"
+              y="-8"
+              width="52"
+              height="14"
+              rx="3"
+              fill="#991b1b"
+              stroke="#ef4444"
+              strokeWidth="1"
+            />
+            <text
+              y="-1"
+              textAnchor="middle"
+              dominantBaseline="central"
+              fill="#fecaca"
+              fontSize="7.5px"
+              fontWeight="800"
+              fontFamily="var(--font-mono)"
+            >
+              🔥 HAZARD
+            </text>
+          </g>
         </g>
       )}
 
@@ -257,7 +318,7 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
         textAnchor="middle"
         dominantBaseline="central"
         fill="#ffffff"
-        stroke="rgba(8, 10, 16, 0.9)"
+        stroke="rgba(8, 10, 16, 0.95)"
         strokeWidth="3.5"
         paintOrder="stroke fill"
         fontSize={isExit ? '13px' : '12px'}
@@ -276,14 +337,14 @@ export const NodeRenderer: React.FC<NodeRendererProps> = ({
         textAnchor="middle"
         fill={
           isBlocked || isClosedExit
-            ? '#f87171'
+            ? 'var(--color-crimson)'
             : isStart
-            ? '#fbbf24'
+            ? 'var(--color-amber)'
             : isOnRoute
-            ? '#e2e8f0'
-            : '#94a3b8'
+            ? 'var(--map-label-route, #e2e8f0)'
+            : 'var(--map-label-default, #94a3b8)'
         }
-        stroke="rgba(8, 10, 16, 0.8)"
+        stroke="var(--map-label-halo, rgba(8, 10, 16, 0.85))"
         strokeWidth="2.5"
         paintOrder="stroke fill"
         fontSize="11px"

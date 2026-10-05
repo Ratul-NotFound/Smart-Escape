@@ -17,6 +17,7 @@ interface SimulationContextValue {
   routeResult: RouteResult;
   lang: Language;
   t: typeof translations['en'];
+  theme: 'dark' | 'light';
   isHighContrast: boolean;
   activeTestRunning: boolean;
 
@@ -29,6 +30,8 @@ interface SimulationContextValue {
   loadBuildingData: (data: BuildingData) => void;
   applyPresetScenario: (scenarioId: 'baseline' | 'blocked_c2' | 'closed_exits' | 'start_r2' | 'blocked_r1') => void;
   setLang: (lang: Language) => void;
+  toggleTheme: () => void;
+  setTheme: (theme: 'dark' | 'light') => void;
   toggleHighContrast: () => void;
 }
 
@@ -52,6 +55,15 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return saved === 'bn' ? 'bn' : 'en';
   });
 
+  const [theme, setThemeState] = useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem('smart_escape_theme');
+    return saved === 'light' ? 'light' : 'dark';
+  });
+
+  useEffect(() => {
+    document.body.classList.toggle('theme-light', theme === 'light');
+  }, [theme]);
+
   const [isHighContrast, setIsHighContrast] = useState<boolean>(() => {
     return localStorage.getItem('smart_escape_contrast') === 'high';
   });
@@ -65,6 +77,19 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const setLang = useCallback((newLang: Language) => {
     setLangState(newLang);
     localStorage.setItem('smart_escape_lang', newLang);
+  }, []);
+
+  const setTheme = useCallback((newTheme: 'dark' | 'light') => {
+    setThemeState(newTheme);
+    localStorage.setItem('smart_escape_theme', newTheme);
+  }, []);
+
+  const toggleTheme = useCallback(() => {
+    setThemeState((prev) => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('smart_escape_theme', next);
+      return next;
+    });
   }, []);
 
   const toggleHighContrast = useCallback(() => {
@@ -197,6 +222,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     routeResult,
     lang,
     t,
+    theme,
     isHighContrast,
     activeTestRunning,
     setStartNodeId,
@@ -207,6 +233,8 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     loadBuildingData,
     applyPresetScenario,
     setLang,
+    toggleTheme,
+    setTheme,
     toggleHighContrast,
   };
 
