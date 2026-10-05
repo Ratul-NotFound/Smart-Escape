@@ -67,7 +67,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       if (node.y > maxY) maxY = node.y;
     }
 
-    const padding = 65;
+    const padding = 70;
     return {
       minX: minX - padding,
       minY: minY - padding,
@@ -78,7 +78,6 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
   // Handle Pan Dragging
   const handleMouseDown = (e: React.MouseEvent<SVGSVGElement>) => {
-    // Only drag with left click and if target is svg background
     if (e.button !== 0) return;
     setIsDragging(true);
     dragStartRef.current = { x: e.clientX - pan.x, y: e.clientY - pan.y };
@@ -110,96 +109,66 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     }
 
     if (interactionMode === 'select_start') {
-      if (!blockedNodes.has(node.id)) {
-        setStartNodeId(node.id);
-      } else {
-        // Start node blocked: allow selecting it anyway to demonstrate TC-5
-        setStartNodeId(node.id);
-      }
+      setStartNodeId(node.id);
     } else {
       toggleNodeHazard(node.id);
     }
   };
 
-  // Find walkthrough node coords
   const walkthroughNode = walkthroughNodeId ? nodeMap.get(walkthroughNodeId) : null;
 
   return (
-    <div className="relative w-full h-[540px] glass-panel overflow-hidden border border-slate-700/60 rounded-xl bg-slate-950/80 shadow-2xl flex flex-col">
-      {/* 1. Header Toolbar with Mode Selectors & Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-slate-800 bg-slate-900/60 backdrop-blur-md z-10">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-            {buildingData.building}
-          </span>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">
+    <div className="map-canvas-card">
+      {/* 1. Header Toolbar */}
+      <div className="map-toolbar">
+        <div className="map-meta-group">
+          <span className="building-title-tag">{buildingData.building}</span>
+          <span className="graph-stats-chip">
             {buildingData.nodes.length} Nodes • {buildingData.edges.length} Corridors
           </span>
         </div>
 
         {/* Interaction Mode Toggle */}
-        <div className="flex items-center gap-1.5 bg-slate-950/80 p-1 rounded-lg border border-slate-800">
+        <div className="interaction-mode-switch">
           <button
             type="button"
-            className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md transition-all ${
-              interactionMode === 'select_start'
-                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
+            className={`mode-toggle-btn ${interactionMode === 'select_start' ? 'active-start' : ''}`}
             onClick={() => setInteractionMode('select_start')}
           >
-            <Crosshair className="w-3.5 h-3.5" />
+            <Crosshair size={14} />
             <span>{t.startLocation}</span>
           </button>
           <button
             type="button"
-            className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md transition-all ${
-              interactionMode === 'toggle_hazard'
-                ? 'bg-red-500/20 text-red-300 border border-red-500/40 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
+            className={`mode-toggle-btn ${interactionMode === 'toggle_hazard' ? 'active-hazard' : ''}`}
             onClick={() => setInteractionMode('toggle_hazard')}
           >
-            <AlertTriangle className="w-3.5 h-3.5" />
+            <AlertTriangle size={14} />
             <span>{t.hazardsTitle}</span>
           </button>
         </div>
 
-        {/* Zoom & Canvas Actions */}
-        <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-lg border border-slate-800">
-          <button
-            type="button"
-            onClick={handleZoomIn}
-            className="p-1.5 text-slate-400 hover:text-white rounded hover:bg-slate-800 transition-colors"
-            title="Zoom In"
-          >
-            <ZoomIn className="w-3.5 h-3.5" />
+        {/* Zoom & Canvas Controls */}
+        <div className="zoom-btn-group">
+          <button type="button" onClick={handleZoomIn} className="zoom-btn" title="Zoom In">
+            <ZoomIn size={15} />
           </button>
-          <button
-            type="button"
-            onClick={handleZoomOut}
-            className="p-1.5 text-slate-400 hover:text-white rounded hover:bg-slate-800 transition-colors"
-            title="Zoom Out"
-          >
-            <ZoomOut className="w-3.5 h-3.5" />
+          <button type="button" onClick={handleZoomOut} className="zoom-btn" title="Zoom Out">
+            <ZoomOut size={15} />
           </button>
-          <button
-            type="button"
-            onClick={handleResetZoom}
-            className="p-1.5 text-slate-400 hover:text-white rounded hover:bg-slate-800 transition-colors"
-            title="Reset View"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
+          <button type="button" onClick={handleResetZoom} className="zoom-btn" title="Reset View">
+            <RotateCcw size={15} />
           </button>
         </div>
       </div>
 
-      {/* 2. Interactive SVG Vector Canvas */}
-      <div className="relative flex-1 w-full h-full overflow-hidden select-none">
+      {/* 2. Interactive SVG Canvas Viewport */}
+      <div className="map-svg-viewport">
         <svg
           id="evacuation-svg-canvas"
-          className="w-full h-full cursor-grab active:cursor-grabbing"
+          className="map-svg-element"
           viewBox={`${minX} ${minY} ${width} ${height}`}
+          style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -207,15 +176,13 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         >
           {/* SVG Definitions */}
           <defs>
-            {/* Emerald glow filter for active route */}
             <filter id="glow-filter" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feGaussianBlur stdDeviation="5" result="blur" />
               <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
 
-            {/* Subtle Grid Background Pattern */}
             <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(51, 65, 85, 0.15)" strokeWidth="1" />
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(56, 189, 248, 0.08)" strokeWidth="1" />
             </pattern>
           </defs>
 
@@ -230,7 +197,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
 
           {/* Transform Layer for Pan & Zoom */}
           <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
-            {/* A. Render Corridors (Edges) First */}
+            {/* Corridors (Edges) */}
             <g className="edges-layer">
               {buildingData.edges.map((edge) => {
                 const fromNode = nodeMap.get(edge.from);
@@ -260,7 +227,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
               })}
             </g>
 
-            {/* B. Render Nodes on Top */}
+            {/* Nodes */}
             <g className="nodes-layer">
               {buildingData.nodes.map((node) => {
                 const isStart = node.id === startNodeId;
@@ -283,20 +250,20 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
               })}
             </g>
 
-            {/* C. Render Animated Walkthrough Avatar Marker */}
+            {/* Walkthrough Avatar Marker */}
             {walkthroughNode && (
               <g
                 className="walkthrough-avatar"
                 transform={`translate(${walkthroughNode.x}, ${walkthroughNode.y})`}
                 pointerEvents="none"
               >
-                <circle r="14" fill="#00ffcc" opacity="0.4" className="radar-pulse-ring" />
-                <circle r="8" fill="#00ffcc" stroke="#ffffff" strokeWidth="2" />
+                <circle r="16" fill="#00ffcc" opacity="0.4" className="radar-pulse-ring" />
+                <circle r="9" fill="#00ffcc" stroke="#ffffff" strokeWidth="2" />
                 <text
-                  y="-14"
+                  y="-16"
                   textAnchor="middle"
                   fill="#00ffcc"
-                  fontSize="10px"
+                  fontSize="11px"
                   fontWeight="800"
                   fontFamily="var(--font-mono)"
                 >
@@ -308,31 +275,31 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         </svg>
 
         {/* Legend Overlay at Bottom-Left */}
-        <div className="absolute bottom-3 left-3 bg-slate-900/85 backdrop-blur-md border border-slate-800 rounded-lg p-2.5 flex flex-wrap items-center gap-3 text-[11px] text-slate-300 pointer-events-none shadow-lg">
-          <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-sm bg-blue-500 border border-blue-400"></span>
+        <div className="map-legend-overlay">
+          <div className="legend-swatch">
+            <span className="swatch-box" style={{ background: 'var(--color-blue)', border: '1px solid #60a5fa' }} />
             <span>{t.nodeTypeRoom}</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-purple-500 border border-purple-400"></span>
+          <div className="legend-swatch">
+            <span className="swatch-circle" style={{ background: 'var(--color-purple)', border: '1px solid #a78bfa' }} />
             <span>{t.nodeTypeJunction}</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-sm rotate-45 bg-emerald-500 border border-emerald-400"></span>
+          <div className="legend-swatch">
+            <span className="swatch-diamond" style={{ background: 'var(--color-emerald)', border: '1px solid #34d399' }} />
             <span>{t.nodeTypeExit}</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-amber-500 border border-amber-400 ring-2 ring-amber-500/40"></span>
+          <div className="legend-swatch">
+            <span className="swatch-circle" style={{ background: 'var(--color-amber)', border: '2px solid #fbbf24' }} />
             <span>{t.startLocation}</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-sm bg-red-600 border border-red-500"></span>
+          <div className="legend-swatch">
+            <span className="swatch-box" style={{ background: 'var(--color-crimson)', border: '1px solid #f87171' }} />
             <span>{t.hazardsTitle}</span>
           </div>
         </div>
 
         {/* Navigation Hint at Bottom-Right */}
-        <div className="absolute bottom-3 right-3 text-[10px] text-slate-500 bg-slate-950/60 px-2 py-1 rounded backdrop-blur border border-slate-900 pointer-events-none">
+        <div className="map-hint-overlay">
           {t.dragPanHelp}
         </div>
       </div>

@@ -16,40 +16,37 @@ export const AlternativeRoutes: React.FC = () => {
   }
 
   return (
-    <div className="w-full glass-panel border border-slate-700/60 p-4 rounded-xl shadow-xl space-y-2.5">
-      <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
-        <GitBranch className="w-4 h-4 text-purple-400" />
-        <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+    <div className="alt-card">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.5rem' }}>
+        <GitBranch size={16} style={{ color: 'var(--color-purple)' }} />
+        <h4 style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-white)' }}>
           {t.alternativeRoutesTitle}
         </h4>
       </div>
 
-      <div className="space-y-2">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         {altRoutes.map((alt, idx) => (
-          <div
-            key={idx}
-            className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
-          >
-            <div className="flex items-center gap-1.5 flex-wrap font-mono">
-              <span className="text-purple-400 font-bold">Alt #{idx + 1}:</span>
+          <div key={idx} className="alt-route-row">
+            <div className="alt-chain">
+              <span style={{ color: 'var(--color-purple)', fontWeight: 800 }}>Alt #{idx + 1}:</span>
               {alt.path.map((nodeId, nodeIdx) => (
                 <React.Fragment key={nodeIdx}>
-                  <span className="text-slate-200 font-semibold">{nodeId}</span>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{nodeId}</span>
                   {nodeIdx < alt.path.length - 1 && (
-                    <ArrowRight className="w-3 h-3 text-slate-500 shrink-0" />
+                    <ArrowRight size={13} style={{ color: 'var(--text-muted)' }} />
                   )}
                 </React.Fragment>
               ))}
             </div>
 
-            <div className="flex items-center gap-2 shrink-0 font-mono text-[11px]">
-              <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300">
-                Exit: <strong>{alt.exitId}</strong>
+            <div className="alt-meta-tags">
+              <span style={{ background: 'var(--bg-app)', padding: '2px 6px', borderRadius: '4px', border: '1px solid var(--border-subtle)' }}>
+                Exit: <strong style={{ color: 'var(--color-emerald)' }}>{alt.exitId}</strong>
               </span>
-              <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300">
-                Cost: <strong>{alt.totalCost}</strong>
+              <span style={{ background: 'var(--bg-app)', padding: '2px 6px', borderRadius: '4px', border: '1px solid var(--border-subtle)' }}>
+                Cost: <strong style={{ color: 'var(--text-white)' }}>{alt.totalCost}</strong>
               </span>
-              <span className="px-2 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-500/40 font-bold">
+              <span className="alt-delta-badge">
                 +{alt.deltaCost}
               </span>
             </div>

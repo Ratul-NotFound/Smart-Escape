@@ -65,18 +65,18 @@ export const TacticalControls: React.FC = () => {
   };
 
   return (
-    <div className="w-full glass-panel border border-slate-700/60 p-4 rounded-xl shadow-xl space-y-4">
+    <div className="controls-card">
       {/* 1. Start Location Picker */}
-      <div className="space-y-1.5">
-        <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 uppercase tracking-wider">
-          <Crosshair className="w-4 h-4 text-amber-400" />
+      <div>
+        <label className="field-label" htmlFor="start-location-select">
+          <Crosshair size={15} style={{ color: 'var(--color-amber)' }} />
           <span>{t.startLocation}</span>
         </label>
         <select
           id="start-location-select"
           value={startNodeId}
           onChange={(e) => setStartNodeId(e.target.value)}
-          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:border-amber-400"
+          className="tactical-select"
         >
           {candidateStarts.map((node) => {
             const isBlocked = blockedNodes.has(node.id);
@@ -87,33 +87,25 @@ export const TacticalControls: React.FC = () => {
             );
           })}
         </select>
-        <div className="text-[11px] text-slate-400">{t.selectStartPrompt}</div>
+        <div className="field-helper">{t.selectStartPrompt}</div>
       </div>
 
-      {/* 2. Navigation Tabs */}
-      <div className="flex border-b border-slate-800 text-xs font-medium">
+      {/* 2. Tactical Navigation Tabs */}
+      <div className="tactical-tabs-bar">
         <button
           type="button"
           onClick={() => setActiveTab('presets')}
-          className={`flex items-center gap-1.5 py-2 px-3 border-b-2 transition-all ${
-            activeTab === 'presets'
-              ? 'border-emerald-500 text-emerald-400 font-semibold'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
-          }`}
+          className={`tab-nav-btn ${activeTab === 'presets' ? 'active' : ''}`}
         >
-          <Sparkles className="w-3.5 h-3.5" />
+          <Sparkles size={14} />
           <span>{t.quickScenarios}</span>
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('hazards')}
-          className={`flex items-center gap-1.5 py-2 px-3 border-b-2 transition-all ${
-            activeTab === 'hazards'
-              ? 'border-red-500 text-red-400 font-semibold'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
-          }`}
+          className={`tab-nav-btn ${activeTab === 'hazards' ? 'active' : ''}`}
         >
-          <AlertTriangle className="w-3.5 h-3.5" />
+          <AlertTriangle size={14} />
           <span>
             {t.hazardsTitle} ({blockedNodes.size + blockedEdges.size + closedExits.size})
           </span>
@@ -121,77 +113,71 @@ export const TacticalControls: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveTab('import')}
-          className={`flex items-center gap-1.5 py-2 px-3 border-b-2 transition-all ${
-            activeTab === 'import'
-              ? 'border-cyan-500 text-cyan-400 font-semibold'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
-          }`}
+          className={`tab-nav-btn ${activeTab === 'import' ? 'active' : ''}`}
         >
-          <Upload className="w-3.5 h-3.5" />
+          <Upload size={14} />
           <span>{t.uploadCustomJson}</span>
         </button>
       </div>
 
       {/* Tab 1: Section 4.1 Quick Scenarios */}
       {activeTab === 'presets' && (
-        <div className="space-y-2">
-          <div className="text-xs text-slate-400">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
             One-click scenarios to verify Problem Statement Section 4.1:
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div className="preset-grid">
             <button
               type="button"
               onClick={() => applyPresetScenario('baseline')}
-              className="btn-tactical text-left justify-start py-2 px-2.5 bg-slate-900/80 hover:bg-slate-800"
+              className="preset-scenario-btn"
             >
-              <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <CheckCircle size={15} style={{ color: 'var(--color-emerald)', flexShrink: 0 }} />
               <span>{t.scenarioBaseline}</span>
             </button>
             <button
               type="button"
               onClick={() => applyPresetScenario('blocked_c2')}
-              className="btn-tactical text-left justify-start py-2 px-2.5 bg-slate-900/80 hover:bg-slate-800"
+              className="preset-scenario-btn"
             >
-              <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <AlertTriangle size={15} style={{ color: 'var(--color-amber)', flexShrink: 0 }} />
               <span>{t.scenarioBlockedJunction}</span>
             </button>
             <button
               type="button"
               onClick={() => applyPresetScenario('closed_exits')}
-              className="btn-tactical text-left justify-start py-2 px-2.5 bg-slate-900/80 hover:bg-slate-800"
+              className="preset-scenario-btn"
             >
-              <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" />
+              <AlertTriangle size={15} style={{ color: 'var(--color-crimson)', flexShrink: 0 }} />
               <span>{t.scenarioExitsClosed}</span>
             </button>
             <button
               type="button"
               onClick={() => applyPresetScenario('start_r2')}
-              className="btn-tactical text-left justify-start py-2 px-2.5 bg-slate-900/80 hover:bg-slate-800"
+              className="preset-scenario-btn"
             >
-              <Crosshair className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+              <Crosshair size={15} style={{ color: 'var(--color-blue)', flexShrink: 0 }} />
               <span>{t.scenarioDifferentStart}</span>
             </button>
             <button
               type="button"
               onClick={() => applyPresetScenario('blocked_r1')}
-              className="btn-tactical text-left justify-start py-2 px-2.5 bg-slate-900/80 hover:bg-slate-800 sm:col-span-2"
+              className="preset-scenario-btn col-span-full"
             >
-              <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0" />
+              <AlertTriangle size={15} style={{ color: 'var(--color-crimson)', flexShrink: 0 }} />
               <span>{t.scenarioBlockedStart}</span>
             </button>
           </div>
         </div>
       )}
 
-      {/* Tab 2: Detailed Hazard Toggles Checklist */}
+      {/* Tab 2: Hazard Checklist */}
       {activeTab === 'hazards' && (
-        <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
-          {/* Node Hazards */}
+        <div className="hazard-chips-wrapper">
+          {/* Rooms and Junctions */}
           <div>
-            <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
-              Rooms & Junctions
-            </div>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="hazard-group-title">Rooms & Junctions (Click to Block/Unblock)</div>
+            <div className="hazard-chips-row">
               {candidateStarts.map((n) => {
                 const isBlocked = blockedNodes.has(n.id);
                 return (
@@ -199,11 +185,7 @@ export const TacticalControls: React.FC = () => {
                     key={n.id}
                     type="button"
                     onClick={() => toggleNodeHazard(n.id)}
-                    className={`px-2 py-1 text-xs font-mono rounded border transition-all ${
-                      isBlocked
-                        ? 'bg-red-500/20 text-red-300 border-red-500 font-bold'
-                        : 'bg-slate-900 text-slate-300 border-slate-700 hover:border-slate-500'
-                    }`}
+                    className={`chip-btn ${isBlocked ? 'blocked' : ''}`}
                   >
                     {isBlocked ? '✕ ' : ''}
                     {n.id}
@@ -213,12 +195,10 @@ export const TacticalControls: React.FC = () => {
             </div>
           </div>
 
-          {/* Exit Hazards */}
+          {/* Emergency Exits */}
           <div>
-            <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
-              Emergency Exits
-            </div>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="hazard-group-title">Emergency Exits (Click to Close/Reopen)</div>
+            <div className="hazard-chips-row">
               {buildingData.nodes
                 .filter((n) => n.type === 'exit')
                 .map((n) => {
@@ -228,11 +208,7 @@ export const TacticalControls: React.FC = () => {
                       key={n.id}
                       type="button"
                       onClick={() => toggleExitClosed(n.id)}
-                      className={`px-2.5 py-1 text-xs font-mono rounded border transition-all ${
-                        isClosed
-                          ? 'bg-red-500/20 text-red-300 border-red-500 font-bold'
-                          : 'bg-emerald-500/20 text-emerald-300 border-emerald-500 hover:bg-emerald-500/30'
-                      }`}
+                      className={`chip-btn ${isClosed ? 'closed-exit' : 'open-exit'}`}
                     >
                       {isClosed ? '🚫 Closed: ' : '🟢 Open: '}
                       {n.id}
@@ -242,12 +218,10 @@ export const TacticalControls: React.FC = () => {
             </div>
           </div>
 
-          {/* Corridor Hazards */}
+          {/* Corridors */}
           <div>
-            <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
-              Corridors ({buildingData.edges.length})
-            </div>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="hazard-group-title">Corridors ({buildingData.edges.length})</div>
+            <div className="hazard-chips-row">
               {buildingData.edges.map((e) => {
                 const isBlocked = blockedEdges.has(e.id);
                 return (
@@ -255,11 +229,7 @@ export const TacticalControls: React.FC = () => {
                     key={e.id}
                     type="button"
                     onClick={() => toggleEdgeHazard(e.id)}
-                    className={`px-2 py-1 text-xs font-mono rounded border transition-all ${
-                      isBlocked
-                        ? 'bg-red-500/20 text-red-300 border-red-500 font-bold'
-                        : 'bg-slate-900 text-slate-300 border-slate-700 hover:border-slate-500'
-                    }`}
+                    className={`chip-btn ${isBlocked ? 'blocked' : ''}`}
                   >
                     {isBlocked ? '✕ ' : ''}
                     {e.id} ({e.from}-{e.to})
@@ -271,28 +241,42 @@ export const TacticalControls: React.FC = () => {
         </div>
       )}
 
-      {/* Tab 3: Import Custom JSON */}
+      {/* Tab 3: Custom JSON Import */}
       {activeTab === 'import' && (
-        <div className="space-y-2">
-          <div className="text-xs text-slate-400">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
             Import any unseen building graph JSON. Schema validation is automatically enforced per Section 3.1.
           </div>
-          <label className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-slate-700 hover:border-cyan-500 rounded-lg cursor-pointer bg-slate-900/60 transition-all">
-            <Upload className="w-6 h-6 text-cyan-400 mb-1" />
-            <span className="text-xs font-medium text-slate-200">Select .json building file</span>
-            <span className="text-[10px] text-slate-500 mt-0.5">2-60 nodes, 1-150 corridors</span>
+          <label className="file-dropzone">
+            <Upload size={24} style={{ color: 'var(--color-primary)' }} />
+            <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-white)' }}>
+              Select .json building file
+            </span>
+            <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
+              2-60 nodes, 1-150 corridors
+            </span>
             <input
               type="file"
               accept=".json"
               onChange={handleFileUpload}
-              className="hidden"
+              style={{ display: 'none' }}
             />
           </label>
 
           {uploadError && (
-            <div className="p-3 bg-red-950/60 border border-red-500/50 rounded-lg text-xs text-red-300 flex items-start gap-2">
-              <FileWarning className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-              <div className="font-mono text-[11px] break-all">{uploadError}</div>
+            <div style={{
+              padding: '0.75rem',
+              borderRadius: '8px',
+              background: 'rgba(239, 68, 68, 0.15)',
+              border: '1px solid var(--color-crimson)',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '0.5rem',
+              color: '#fca5a5',
+              fontSize: '0.75rem'
+            }}>
+              <FileWarning size={16} style={{ color: 'var(--color-crimson)', flexShrink: 0, marginTop: 2 }} />
+              <div style={{ fontFamily: 'var(--font-mono)', wordBreak: 'break-all' }}>{uploadError}</div>
             </div>
           )}
         </div>

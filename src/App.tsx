@@ -18,31 +18,33 @@ const DashboardContent: React.FC = () => {
   const { buildingData } = useSimulation();
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100 selection:bg-emerald-500/30">
+    <div className="app-shell">
+      {/* 1. Master Header with Localization & Actions */}
       <Header />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 space-y-4">
-        {/* 1. Top Real-Time Evacuation HUD */}
+      {/* 2. Main Center Container */}
+      <main className="app-container">
+        {/* Top Emergency Status Banner & Breadcrumbs */}
         <RouteHUD />
 
-        {/* 2. Main Layout Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-          {/* Left Column: Interactive Map Canvas (7 cols on Desktop) */}
-          <div className="lg:col-span-7 space-y-4">
+        {/* 2-Column Responsive Dashboard Layout */}
+        <div className="dashboard-layout">
+          {/* Left Column: Interactive Vector SVG Map & Walkthrough Player */}
+          <div className="column-stack">
             <MapCanvas
               interactionMode={interactionMode}
               setInteractionMode={setInteractionMode}
               walkthroughNodeId={walkthroughNodeId}
             />
-            {/* Walkthrough Player beneath the map */}
+            {/* Walkthrough Player */}
             <RouteWalkthrough onStepChange={setWalkthroughNodeId} />
-            {/* Alternative Routes beneath the walkthrough */}
+            {/* Alternative Routes Detour Analysis */}
             <AlternativeRoutes />
           </div>
 
-          {/* Right Column: Tactical Controls & Official Test Runner (5 cols on Desktop) */}
-          <div className="lg:col-span-5 space-y-4">
-            {/* Start Node Selector, Hazard Checklists & Scenario Presets */}
+          {/* Right Column: Tactical Controls, Presets & Judge Verification Runner */}
+          <div className="column-stack">
+            {/* Start Node Selector, Hazard Checklists & Quick Presets */}
             <TacticalControls />
 
             {/* Official Judge Automated Verification Runner */}
@@ -51,17 +53,17 @@ const DashboardContent: React.FC = () => {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="w-full border-t border-slate-900 bg-slate-950/80 py-4 px-4 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      {/* 3. Footer */}
+      <footer className="app-footer">
+        <div className="footer-inner">
           <div>
-            <strong>Smart Escape</strong> • Built for AI DevFest 2026 AI Vibe-Coding Contest (Solo)
+            <strong>Smart Escape</strong> • AI DevFest 2026 AI Vibe-Coding Contest (Solo)
           </div>
-          <div className="font-mono text-[11px] text-slate-400">
-            Active Dataset: {buildingData.building}
+          <div style={{ fontFamily: 'var(--font-mono)' }}>
+            Active Dataset: <strong style={{ color: 'var(--text-white)' }}>{buildingData.building}</strong>
           </div>
           <div>
-            Released under <a href="./LICENSE" className="text-slate-400 hover:underline">MIT License</a>
+            Released under <a href="./LICENSE" style={{ color: 'var(--text-primary)', textDecoration: 'underline' }}>MIT License</a>
           </div>
         </div>
       </footer>
