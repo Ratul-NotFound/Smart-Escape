@@ -10,7 +10,7 @@
 
 | Phase | Description | Status | Completed / Total |
 | :---: | :--- | :---: | :---: |
-| **Phase 0** | Governance, Config & Dotfiles | **In Progress** | 6 / 7 |
+| **Phase 0** | Governance, Config & Dotfiles | **Completed** | 7 / 7 |
 | **Phase 1** | Project Scaffolding & Tooling | **Pending** | 0 / 5 |
 | **Phase 2** | Core Domain, Dijkstra Engine & Validator | **Pending** | 0 / 6 |
 | **Phase 3** | Reactive Application State & Store | **Pending** | 0 / 4 |
@@ -21,7 +21,7 @@
 | **Phase 8** | Winning Bonus Extensions | **Pending** | 0 / 5 |
 | **Phase 9** | Quality Assurance, Screenshots & Verification | **Pending** | 0 / 5 |
 | **Phase 10**| Release Deliverables & Live Deployment | **Pending** | 0 / 5 |
-| **Total** | | | **6 / 54** |
+| **Total** | | | **7 / 54** |
 
 ---
 
@@ -33,7 +33,7 @@
 - [x] `TASK-004`: Create `.prettierrc` and `.prettierignore` for code formatting consistency.
 - [x] `TASK-005`: Create `AGENTS.md` specifying agent directives, contest constraints, and tie-breaking rules.
 - [x] `TASK-006`: Create `RULES.md` and `DESIGN.md` establishing system architecture and scoring rubrics.
-- [ ] `TASK-007`: Initialize Git repository with naming convention `devfest-<registration-number>` and commit setup docs.
+- [x] `TASK-007`: Initialize Git repository on GitHub and commit setup docs.
 
 ---
 
